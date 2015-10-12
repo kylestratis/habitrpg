@@ -176,8 +176,9 @@ describe "Party", ->
           User.findByIdAndUpdate user._id,
             $set:
               "stats.lvl": 50
-          , (err, _user) ->
-            cb(null, _user)
+          , {new: true}, (err, _user) ->
+            _user.getTransformedData (err, _user) ->
+              cb(null, _user)
         (_user, cb) ->
           user = _user
           request.post(baseURL + "/user/batch-update").send([
@@ -285,7 +286,6 @@ describe "Party", ->
       request.get(baseURL + "/members/" + party[0]._id).end (res) ->
         party[0] = res.body
         request.post(baseURL + "/user/class/cast/snowball?targetType=user&targetId=" + party[0]._id).end (res) ->
-
           #expect(res.body.stats.mp).to.be.below(mp);
           request.get(baseURL + "/members/" + party[0]._id).end (res) ->
             member = res.body
